@@ -14,9 +14,9 @@
 #define IC_FIRST_ADDRESS       	100
 #define DC_FIRST_ADDRESS       	0
 #define MAX_DATA_SIZE          	1000
-#define MAX_BUF                	80
-#define MAX_FILENAME           	32
-#define MAX_LABEL_LENGTH       	30
+#define MAX_BUF                	81
+#define MAX_FILENAME           	33
+#define MAX_LABEL_LENGTH       	31
 #define WORD_LENGTH           	15
 #define MAX_REGISTER_DIGIT     	7
 #define BYTE_SIZE	       	8
@@ -65,12 +65,13 @@ static int IC = IC_FIRST_ADDRESS;
 static int DC = DC_FIRST_ADDRESS;
 typedef enum {false, true} bool;
 
+extern int errorCounter;
 extern const char commands[16][4];
 
 /*----------------- Functions Declaration -----------------*/
 
 int checkCMD(char *);
-void startLoop(char *);
+void startLoop(char *, int);
 void endLoop(char *);
 
 #endif

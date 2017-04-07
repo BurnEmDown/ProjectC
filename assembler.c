@@ -1,35 +1,25 @@
 #include "common.h"
 
+/* the main function recieves arguments for file names (without ".as" at the end), and passes each of them through the first loop and then the second loop */
 int main(int argc, char *argv[]) 
 {
 	int i;
-	/*char **nameList;*/
+	int errorCounter = 0;
+	char * fileName;
 	
-	/* create array to hold given filenames 
-	nameList = (char**) malloc((argc) * sizeof(char*);
-	if(nameList == NULL)
-	{
-		printf("error, out of memory");
-		exit(0);
-	}
-	*/
-	/*for(i=1;i<argc;i++)	  	/* copy the given filenames to the name array 
-	{
-	   nameList[i] = malloc((MAX_FILENAME) * sizeof(char));
-	   if(strncmp(nameList[i],STRING_END) == 0)
-	   {
-	   	printf("error, out of memory");
-	   	exit(0);
-	   }
-	   strcpy(nameList[i],argv[i]);
-	   strcat(nameList[i],STRING_END);
-
-	}
-	*/
 	for(i=1;i<argc;i++)
 	{
-		startLoop(argv[i]);
-		endLoop(argv[i]);
+		fileName = (char *)malloc(MAX_FILENAME * sizeof(char));
+		strcpy(fileName,argv[i]);
+		startLoop(fileName, errorCounter);
+		if(errorCounter == 0)
+		{
+			endLoop(fileName);
+		}
+		else
+		{
+			printf("There were %d errors in file %s, no files created/n",errorCounter,fileName);
+		}
 	}
 
 	return 0;

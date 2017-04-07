@@ -1,7 +1,12 @@
 # ProjectC
-Maman14 Project, Assembler
+Maman14 Project, Assembler Machine
+This Project made by two students from the same group study
 
-Made by Amit Reuveni, ID 204000301
-and by Ofir Sasson, ID 203650296
+Semester: 2017a
+Coordinator: Michal Abimor
+Study Group: 02
+Teacher Name: Yakir Zadok
 
-Teacher: Yakir Zadok
+Students Name: Amit Reuveni, ID 204000301 and Ofir Sasson, ID 203650296
+
+

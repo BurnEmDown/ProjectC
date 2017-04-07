@@ -26,24 +26,22 @@ void endLoop(char * fileName)
 	char entFile[MAX_LABEL_LENGTH];
 	char extFile[MAX_LABEL_LENGTH];
 
-	mCNp _machhead = NULL;
 	codp tempCod;				/* holds info on current line of code that we collected on first loop */
 	symp tempSym;				/* holds info on a temporary symbol */
-	mCNp temp;
 	int groupCode;
 	int opCode;
 	int op1;
 	int op2;
 	int ARE;				/* holds current ERA value */
-	int op1ARE;
+	int op1ARE;				/* holds ERA value of 1st operand in a 2 operand command line */
 	int code_length;		
 
-	char letter;			
+	char letter;				
 	int labelpos;				/* label position in line */ 
 	int cmdNUM;				/* command type */
-	int op1result;
-	int op2result;
-	int check;				/* the number of words required by the line */
+	int op1result;				/* holds info on 1st operand type */
+	int op2result;				/* holds info on 2nd operand type */
+	int check;				/* temp int for some checks */
 	int address;				/* hold address of current symbol\entry\extern word */
 
 	strcpy(sourceFile, fileName);	
@@ -470,13 +468,10 @@ void endLoop(char * fileName)
 	
 	 
 	}
-
-	temp = _machhead;
-
-	while(temp != NULL)
-	{
-	    fprintf(fob,"%d /n",temp->current.code);
-	    temp = temp->next;
-	}
+	/* TO DO: */
 	/* merge code table with data table */
+	/* print linked lists to their relevant files (in hexadecimal), with relevant lengths of data\code */
+	/* delete entry and\or external files, if they are not needed */
+	/* free all lists */
+	
 }

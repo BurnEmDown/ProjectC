@@ -92,6 +92,7 @@ void endLoop(char * fileName)
 	   tempString = strchr(buf,LABEL_SIGN);
 	   if(tempString) 	 /* checks if the line contains a label */
 	   {
+		labelpos = strcspn(buf,(char *)LABEL_SIGN);
 		if(strlen(tempWord)>MAX_LABEL_LENGTH)
 		{
 		   /* error code 102: label length is too big*/
@@ -104,6 +105,7 @@ void endLoop(char * fileName)
 		/* checks for valid label */
 		if(strchr(tempLabel, STRING_SIGN) != NULL)				/* find if there is a '"' in the word */
 		{
+		   
 		   check = strcspn(tempLabel, (char *)LABEL_SIGN);			/* find the location of ':' */
 		   strncpy(tempWord, tempLabel, check);					/* copy the part of the word before ':' into tempWord, to check */
 		   strcat(tempWord,STRING_END);

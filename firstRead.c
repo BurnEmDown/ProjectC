@@ -8,7 +8,7 @@ void errorFunction(char *, int, int);
 
 
 /* the first loop that: opens the given filename, reads through it, adding the relevant information to symbols linked-list, code table, and data table */
-void startLoop(char * fileName)
+void startLoop(char * fileName, int errorCounter)
 {
 
 	FILE *fp;	
@@ -27,6 +27,8 @@ void startLoop(char * fileName)
 	int code_length;
 	int data_length;
 
+	char *p;
+	char * tempString;
 	char letter;
 	char * buf2;		
 	int labelpos;			/* label position in line */ 
@@ -45,7 +47,7 @@ void startLoop(char * fileName)
 	strcpy(sourceFile,fileName);
 	strcat(sourceFile,SOURCE_FILE);	/* add ".as" to the end of the filename, to address to the proper file */
 	strcat(sourceFile,STRING_END);
-
+	
 	fp = fopen(sourceFile, "r");
 
 	if(!fp)
@@ -54,34 +56,35 @@ void startLoop(char * fileName)
 	   exit(0);
 	}
 
+	
 	while(fgets(buf,MAX_BUF,fp) != NULL) 	/* reads a line from the text file */
 	{
 	   strcat(buf,STRING_END);
 	   lineNum++;
 	   /* check for empty or comment line */
 	   j = 0; /* reset index j before check */
-
+	   
 	   if((j = skipSpaces(buf,tempWord)) == -1)
 	   {
 		/* empty line */
-		break;
+		continue;
 	   }
-
-	   /*--- MAKE SURE TO CHECK IF J IS NEEDED IN NEXT LINE ---*/
-	   /*--- MAKE SURE TO CHECK IF J IS NEEDED IN NEXT LINE ---*/ 
-	   /*--- MAKE SURE TO CHECK IF J IS NEEDED IN NEXT LINE ---*/
-
+	
 	   
-	   letter = buf[j];		/* check first non-space letter of the line to see if it's a comment line */
+	   letter = buf[0];		/* check first letter of the line to see if it's a comment line */
 	   if(letter == COMMENT_SIGN)
 	   {
-		break;
+		/* comment line */
+		continue;
 	   }
-	   j = 0; /* reset index j after check */
 	   
-	   if((labelpos = strcspn(buf,(char *)LABEL_SIGN)) != (strlen(buf))) 		/* checks if the line contains a label */
+	   j = 0; /* reset index j after check */
+
+	   tempString = strchr(buf,LABEL_SIGN);
+	   if(tempString)		/* checks if the line contains a label */
 	   {
-		strncpy(tempLabel,buf,labelpos);
+		labelpos = strcspn(buf,(char *)LABEL_SIGN);				/* find position of ':' */
+		strncpy(tempLabel,buf,labelpos);					/* copy part of buf before ':' to tempLabel */
 		strcat(tempLabel,STRING_END);
 		/* checks for valid label */
 		if(strchr(tempLabel,(char)STRING_SIGN) != NULL)				/* find if there is a '"' in the word */
@@ -93,7 +96,7 @@ void startLoop(char * fileName)
 		   {
 			if(strchr(tempLabel+check,(char)LABEL_SIGN) != NULL)
 			{
-			   break;		/* we have found that ':' is between two '"'s so it's not part of a label, but part of a string */
+			   continue;		/* we have found that ':' is between two '"'s so it's not part of a label, but part of a string */
 			}
 
 		   }
@@ -101,27 +104,31 @@ void startLoop(char * fileName)
 		else if(strchr(tempLabel,LABEL_SIGN) == NULL)
 		{
 		    /* error code 100: ':' is not part of label */
+		    errorCounter++;
 		    errorFunction(fileName, lineNum, 100);
 		}
 
 		if(isalpha(letter)==0)
 		{
 		    /* error code 101: first letter is not a real letter */
+		    errorCounter++;
 		    errorFunction(fileName, lineNum, 101);
 		}
 		
 		if(strlen(tempLabel)>MAX_LABEL_LENGTH)
 		{
 		   /* error code 102: label length is too big*/
+		    errorCounter++;
 		   errorFunction(fileName, lineNum, 102);
 		}
 		
 		label_flag = true;
+
 		strncpy(label,tempLabel,(strlen(tempLabel)-1));			/* copy label name to label string, without the ":" at the end */
+
 		strcat(label,STRING_END);
 
 	   }
-
 	   else
 	   {
 	     	label_flag = false;
@@ -135,6 +142,7 @@ void startLoop(char * fileName)
 		if(j == -1)
 		{
 			/* error code 103: no more letters in line */
+			errorCounter++;
 			errorFunction(fileName, lineNum, 103);
 		}
 
@@ -158,6 +166,7 @@ void startLoop(char * fileName)
 		   else
 		   {
 			/* error code 104: label name already exists */
+		        errorCounter++;
 			errorFunction(fileName, lineNum, 104);
 		   }		
 		}
@@ -166,6 +175,7 @@ void startLoop(char * fileName)
 		if(j == -1)
 		{
 			/* error code 105: line is empty (after label name if there was label) */
+		        errorCounter++;
 			errorFunction(fileName, lineNum, 105);
 		}
 
@@ -175,6 +185,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 105: line is empty after ".data" */
+	   		        errorCounter++;
 				errorFunction(fileName, lineNum, 105);
 			}
 			
@@ -191,6 +202,7 @@ void startLoop(char * fileName)
 					else
 					{
 						/* error code 104: label name already exists */
+			 		        errorCounter++;
 						errorFunction(fileName, lineNum, 104);
 					}
 				}
@@ -207,7 +219,6 @@ void startLoop(char * fileName)
 					if(j == -1)
 					{
 						/* line is empty after previous number */
-						
 					}
 
 					if(sscanf(tempBuf2, "%d", &tempNum) != 0)		/* add the number to data list */
@@ -229,6 +240,7 @@ void startLoop(char * fileName)
 				else
 				{
 					/* error code 106: no number after last comma */
+				        errorCounter++;
 					errorFunction(fileName, lineNum, 106);
 				}
 				
@@ -236,6 +248,7 @@ void startLoop(char * fileName)
 			else 		/* no number after ".data" */
 			{
 				/* error code 105: line is empty after ".data" */
+			        errorCounter++;
 				errorFunction(fileName, lineNum, 105);
 			}
 			
@@ -247,12 +260,14 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 105: line is empty after ".string" */
+			        errorCounter++;
 				errorFunction(fileName, lineNum, 105);
 			}
 
 			if(tempBuf2[0] != STR_FLAG)
 			{
 				/* error code 107: next word is not a string */
+			        errorCounter++;
 				errorFunction(fileName, lineNum, 107);
 			}
 			else
@@ -266,12 +281,14 @@ void startLoop(char * fileName)
 					if(j != -1)
 					{
 						/* error code 108: line isn't empty after the string */
+					        errorCounter++;
 						errorFunction(fileName, lineNum, 108);
 					}
 				}
 				else
 				{
 					/* error code 109: no closing '"' for the string */
+				        errorCounter++;
 					errorFunction(fileName, lineNum, 109);
 				}
 
@@ -289,6 +306,7 @@ void startLoop(char * fileName)
 					else
 					{
 						/* error code 104: label name already exists */
+					        errorCounter++;
 						errorFunction(fileName, lineNum, 104);
 					}
 
@@ -311,6 +329,7 @@ void startLoop(char * fileName)
 		else
 		{
 			/* error code 110: first word (after possible label) isnt ".data" or ".string" */
+		        errorCounter++;
 			errorFunction(fileName, lineNum, 110);
 		}
 
@@ -329,6 +348,7 @@ void startLoop(char * fileName)
 		   if(j == -1)
 		   {
 			/* error code 103: no more letters in line */
+		        errorCounter++;
 			errorFunction(fileName, lineNum, 103);
 		   }
 	
@@ -339,6 +359,7 @@ void startLoop(char * fileName)
 		   if(j != -1)
 		   {
 			/* error code 111: line isn't empty after external symbol name */
+		        errorCounter++;
 			errorFunction(fileName, lineNum, 111);
 		   }
 
@@ -350,6 +371,7 @@ void startLoop(char * fileName)
 		   else
 		   {
 			/* error code 104: label name already exists */
+		        errorCounter++;
 			errorFunction(fileName, lineNum, 104);
 		   }
 		}
@@ -364,6 +386,7 @@ void startLoop(char * fileName)
 	   	if(j == -1)
 		{
 			/* error code 103: no more letters in line */
+		        errorCounter++;
 			errorFunction(fileName, lineNum, 103);
 		}
 
@@ -375,6 +398,7 @@ void startLoop(char * fileName)
 		if(j == -1)
 		{
 			/* error code 103: no more letters in line */
+		        errorCounter++;
 			errorFunction(fileName, lineNum, 103);
 		}
 	   }
@@ -384,12 +408,16 @@ void startLoop(char * fileName)
 	   switch(cmdNUM)
 	   {
 		case -1: /* error: no command */
+			errorCounter++;	
+			errorFunction(fileName, lineNum, 116);
+
 		case 0:  /* mov */ 
 			j = skipSpaces(buf+j,tempWord);
 			
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -397,12 +425,14 @@ void startLoop(char * fileName)
 			if(op2result < 10)
 			{
 				/* error code 112: error in operand info */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 112);
 			}
 
 			else if(op2result % 10 == 1)
 			{
 				/* error code 113: destination operand is using illegal address method for command 'mov' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);
 			}
 
@@ -428,6 +458,7 @@ void startLoop(char * fileName)
 			   else
 			   {
 				/* error code 104: label name already exists */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 104);				
 			   }
 			}
@@ -439,6 +470,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -446,6 +478,7 @@ void startLoop(char * fileName)
 			if(op2result < 10)
 			{
 				/* error code 112: error in operand info */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 112);
 			}
 
@@ -470,6 +503,7 @@ void startLoop(char * fileName)
 			   else
 			   {
 				/* error code 104: label name already exists */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 104);				
 			   }
 			}
@@ -480,6 +514,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -487,11 +522,13 @@ void startLoop(char * fileName)
 			if(op2result < 10)
 			{
 				/* error code 112: error in operand info */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 112);
 			}
 			else if(op2result % 10 == 1)
 			{
 				/* error code 113: destination operand is using illegal address method for command 'add' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);
 			}
 
@@ -516,6 +553,7 @@ void startLoop(char * fileName)
 			   else
 			   {
 				/* error code 104: label name already exists */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 104);					
 			   }
 			}
@@ -526,6 +564,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -533,11 +572,13 @@ void startLoop(char * fileName)
 			if(op2result < 10)
 			{
 				/* error code 112: error in operand info */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 112);
 			}
 			else if(op2result % 10 == 1)
 			{
 				/* error code 113: destination operand is using illegal address method for command 'sub' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);
 			}
 			
@@ -562,6 +603,7 @@ void startLoop(char * fileName)
 			   else
 			   {
 				/* error code 104: label name already exists */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 104);					
 			   }
 			}
@@ -572,6 +614,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -579,12 +622,14 @@ void startLoop(char * fileName)
 			if(op1result == 1)
 			{
 				/* error code 113: destination operand is using illegal address method for command 'not' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);
 			}
 
 			if(op1result == 0)
 			{
 				/* error code 115: no operand information recieved */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 115);
 			}
 			else
@@ -602,6 +647,7 @@ void startLoop(char * fileName)
 				   else
 				   {
 					/* error code 104: label name already exists */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 104);					
 				   }
 				}
@@ -613,6 +659,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -620,12 +667,14 @@ void startLoop(char * fileName)
 			if(op1result == 1)
 			{
 				/* error code 113: destination operand is using illegal address for command 'clr' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);
 			}
 
 			if(op1result == 0)
 			{
 				/* error code 115: no operand information recieved */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 115);
 			}
 			else
@@ -643,6 +692,7 @@ void startLoop(char * fileName)
 				   else
 				   {
 					/* error code 104: label name already exists */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 104);					
 				   }
 				}
@@ -654,6 +704,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -661,18 +712,21 @@ void startLoop(char * fileName)
 			if(op2result < 10)
 			{
 				/* error code 115: no operand information recieved */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 115);
 			}
 
 			else if(op2result % 10 == 1)
 			{
 				/* error code 113: destination operand is using illegal address method for command 'lea' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);
 			}
 
 			else if(op2result < 30 ) 
 			{
 				/* error code 114: origin operand is using illegal address methods for command 'lea' (immediate or register) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 114);
 			}
 
@@ -690,6 +744,7 @@ void startLoop(char * fileName)
 			   else
 			   {
 				/* error code 104: label name already exists */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 104);					
 			   }
 			}
@@ -700,6 +755,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -707,12 +763,14 @@ void startLoop(char * fileName)
 			if(op1result == 1)
 			{
 				/* error code 113: destination operand is using illegal address method for command 'inc' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);
 			}
 
 			if(op1result == 0)
 			{
 				/* error code 115: no operand information recieved */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 115);
 			}
 			else
@@ -730,6 +788,7 @@ void startLoop(char * fileName)
 				   else
 				   {
 					/* error code 104: label name already exists */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 104);					
 				   }
 				}
@@ -741,6 +800,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -748,12 +808,14 @@ void startLoop(char * fileName)
 			if(op1result == 1)
 			{
 				/* error code 113: destination operand is using illegal address method for command 'dec' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);	
 			}
 
 			if(op1result == 0)
 			{
 				/* error code 115: no operand information recieved */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 115);
 			}
 
@@ -772,6 +834,7 @@ void startLoop(char * fileName)
 				   else
 				   {
 					/* error code 104: label name already exists */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 104);					
 				   }
 				}
@@ -784,6 +847,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -791,12 +855,14 @@ void startLoop(char * fileName)
 			if(op1result == 1)
 			{
 				/* error code 113: destination operand is using illegal address for command 'jmp' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);
 			}
 
 			if(op1result == 0)
 			{
 				/* error code 115: no operand information recieved */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 115);
 			}
 
@@ -815,6 +881,7 @@ void startLoop(char * fileName)
 				   else
 				   {
 					/* error code 104: label name already exists */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 104);				
 				   }
 				}
@@ -826,6 +893,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -833,12 +901,14 @@ void startLoop(char * fileName)
 			if(op1result == 1)
 			{
 				/* error code 113: destination operand is using illegal address method for command 'bne' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);	
 			}
 
 			if(op1result == 0)
 			{
 				/* error code 115: no operand information recieved */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 115);
 			}
 
@@ -857,6 +927,7 @@ void startLoop(char * fileName)
 				   else
 				   {
 					/* error code 104: label name already exists */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 104);					
 				   }
 				}
@@ -868,6 +939,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -875,12 +947,14 @@ void startLoop(char * fileName)
 			if(op1result == 1)
 			{
 				/* error code 113: destination operand is using illegal address method for command 'red' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);
 			}
 
 			if(op1result == 0)
 			{
 				/* error code 115: no operand information recieved */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 115);
 			}
 
@@ -899,6 +973,7 @@ void startLoop(char * fileName)
 				   else
 				   {
 					/* error code 104: label name already exists */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 104);					
 				   }
 				}
@@ -910,6 +985,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -917,6 +993,7 @@ void startLoop(char * fileName)
 			if(op1result == 0)
 			{
 				/* error code 115: no operand information recieved */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 115);
 			}
 			else
@@ -934,6 +1011,7 @@ void startLoop(char * fileName)
 				   else
 				   {
 					/* error code 104: label name already exists */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 104);					
 				   }
 				}
@@ -946,6 +1024,7 @@ void startLoop(char * fileName)
 			if(j == -1)
 			{
 				/* error code 103: no more letters in line */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 103);
 			}
 
@@ -953,11 +1032,13 @@ void startLoop(char * fileName)
 			if(op1result == 1)
 			{
 				/* error code 113: destination operand is using illegal address method for command 'jsr' (immediate) */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 113);
 			}
 			if(op1result == 0)
 			{
 				/* error code 115: no operand information recieved */
+				errorCounter++;	
 				errorFunction(fileName, lineNum, 115);
 			}
 			else
@@ -975,6 +1056,7 @@ void startLoop(char * fileName)
 				   else
 				   {
 					/* error code 104: label name already exists */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 104);				
 				   }
 				}
@@ -996,6 +1078,7 @@ void startLoop(char * fileName)
 				   else
 				   {
 					/* error code 104: label name already exists */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 104);				
 				   }
 				}
@@ -1016,6 +1099,7 @@ void startLoop(char * fileName)
 				   else
 				   {
 					/* error code 104: label name already exists */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 104);			
 				   }
 				}
@@ -1024,7 +1108,8 @@ void startLoop(char * fileName)
 		default: /* if not a command, or error */
 			
 			continue;
-			/* Error not fount */
+			/* Error not found */
+			errorCounter++;	
 			errorFunction(fileName, lineNum, 000);	
 	   }
 

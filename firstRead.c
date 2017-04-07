@@ -22,13 +22,13 @@ void startLoop(char * fileName, int errorCounter)
 	char tempLabel[MAX_BUF];		/* a buffer for holding potential label name */
 	char label[MAX_LABEL_LENGTH];   	/* holds current label if it exists */
 	char tempWord[MAX_LABEL_LENGTH];	/* a temp buffer to hold a temporary word from buf */
+	char * tempString;
 	int tempNum;				/* a temp int to hold numbers */
 	char sourceFile[MAX_BUF];
 	int code_length;
 	int data_length;
 
 	char *p;
-	char * tempString;
 	char letter;
 	char * buf2;		
 	int labelpos;			/* label position in line */ 

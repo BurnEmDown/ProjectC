@@ -1,6 +1,6 @@
 # ProjectC
 Maman14 Project, Assembler Machine
-This Project made by two students from the same group study
+This Project was made by two students from the same study group
 
 Semester: 2017a
 Coordinator: Michal Abimor

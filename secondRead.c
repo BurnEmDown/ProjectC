@@ -21,6 +21,7 @@ void endLoop(char * fileName)
 	char tempLabel[MAX_BUF];		/* a buffer for holding potential label name */
 	char label[MAX_LABEL_LENGTH];   	/* holds current label if it exists */
 	char tempWord[MAX_LABEL_LENGTH];	/* a temp buffer to hold a temporary word from buf */
+	char * tempString;
 	char sourceFile[MAX_LABEL_LENGTH];
 	char objFile[MAX_LABEL_LENGTH];
 	char entFile[MAX_LABEL_LENGTH];
@@ -78,21 +79,18 @@ void endLoop(char * fileName)
 	   if((j = skipSpaces(buf,tempWord)) == -1)
 	   {
 		/* empty line */
-		break;
+		continue;
 	   }
 
-	   /*--- MAKE SURE TO CHECK IF J IS NEEDED IN NEXT LINE ---*/
-	   /*--- MAKE SURE TO CHECK IF J IS NEEDED IN NEXT LINE ---*/ 
-	   /*--- MAKE SURE TO CHECK IF J IS NEEDED IN NEXT LINE ---*/
-
-	   letter = buf[j]; 		/* check first non-space letter of the line to see if it's a comment line */
+	   letter = buf[0]; 		/* check first letter of the line to see if it's a comment line */
 	   if(letter == COMMENT_SIGN)
 	   {
-		break;
+		continue;
 	   }
 	   j = 0; /* reset index j after check */
 	   
-	   if((labelpos = strcspn(buf,(char *)LABEL_SIGN)) != (strlen(buf))) 	 /* checks if the line contains a label */
+	   tempString = strchr(buf,LABEL_SIGN);
+	   if(tempString) 	 /* checks if the line contains a label */
 	   {
 		if(strlen(tempWord)>MAX_LABEL_LENGTH)
 		{
@@ -147,7 +145,7 @@ void endLoop(char * fileName)
 		
 	   if(strstr(buf,ENTRY_WORD) != NULL || strstr(buf,EXTERN_WORD) != NULL)
 	   {
-		strcpy(tempBuf,strchr(buf,SPACE));			/* find the end of instruction name */
+		strcpy(tempBuf,strchr(buf,SPACE));		/* find the end of instruction name */
 	  	strcat(tempBuf,STRING_END);
 		if(strstr(buf,EXTERN_WORD) != NULL)		/* if it's external instruction */
 		{
@@ -176,6 +174,7 @@ void endLoop(char * fileName)
 			/* convert address to hexadecimal */
 
 			fprintf(fext, "%d \t %s", address, tempBuf2);	/* write the label name and its address (in hexa) to external labels file */
+
 		   }
 
 		   else

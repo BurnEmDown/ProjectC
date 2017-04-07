@@ -31,8 +31,8 @@ void endLoop(char * fileName)
 	symp tempSym;				/* holds info on a temporary symbol */
 	int groupCode;
 	int opCode;
-	int op1;
-	int op2;
+	int op1;				/* holds info on 1st operand type */
+	int op2;				/* holds info on 2nd operand type */
 	int ARE;				/* holds current ERA value */
 	int op1ARE;				/* holds ERA value of 1st operand in a 2 operand command line */
 	int code_length;		
@@ -40,8 +40,8 @@ void endLoop(char * fileName)
 	char letter;				
 	int labelpos;				/* label position in line */ 
 	int cmdNUM;				/* command type */
-	int op1result;				/* holds info on 1st operand type */
-	int op2result;				/* holds info on 2nd operand type */
+	int op1result;				/* saves 1st operand's value (decimal) */
+	int op2result;				/* saves 2nd operand's value (decimal) */
 	int check;				/* temp int for some checks */
 	int address;				/* hold address of current symbol\entry\extern word */
 

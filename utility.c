@@ -2,6 +2,7 @@
 
 const char commands[16][4] = {"mov","cmp","add","sub","not","clr","lea","inc","dec","jmp","bne","red","prn","jsr","rts","stop"};
 
+int errorCounter;
 
 /*-------------------From Base 10 to Base 16-------------------*/
 
@@ -100,135 +101,134 @@ void errorFunction(char * sourceFile, int lineNum, int errorCode)
     switch(errorCode)
     {
         case 100:
-                fprintf(stderr,"%s: error in line %d - ':' is not part of lable\n",sourceFile, lineNum);
+                printf("error in line %d - ':' is not part of lable\n", lineNum);
                 break;
 
         case 101:
-                fprintf(stderr, "%s: error in line %d - first letter invalid\n",sourceFile, lineNum);
+                printf("error in line %d - first letter invalid\n", lineNum);
                 break;
 
         case 102:
-                fprintf(stderr, "%s: error in line %d - lable length is too long\n", sorceFile, lineNum);
+                printf("error in line %d - lable length is too long\n", lineNum);
                 break;
 
         case 103:
-                fprintf(stderr, "%s: error in line %d - no more letters in the line\n", sorceFile, lineNum);
+                printf("error in line %d - no more letters in the line\n", lineNum);
                 break;
 
         case 104:
-                fprintf(stderr, "%s: error in line %d - lable name already exists\n", sorceFile, lineNum);
+                printf("error in line %d - lable name already exists\n", lineNum);
                 break;
 
         case 105:
-                fprintf(stderr, "%s: error in line %d - missing expression after ':'\n", sorceFile, lineNum);
+                printf("error in line %d - missing expression after ':'\n", lineNum);
                 break;
 
         case 106:
-                fprintf(stderr, "%s: error in line %d - missing arguments\n", sorceFile, lineNum);
+                printf("error in line %d - missing arguments\n", lineNum);
                 break;
 
         case 107:
-                fprintf(stderr, "%s: error in line %d - next word is not a string\n", sorceFile, lineNum);
+                printf("error in line %d - next word is not a string\n", lineNum);
                 break;
 
         case 108:
-                fprintf(stderr, "%s: error in line %d - line isn't empty after the string\n", sorceFile, lineNum);
+                printf("error in line %d - line isn't empty after the string\n", lineNum);
                 break;
 
         case 109:
-                fprintf(stderr, "%s: error in line %d - missing \" for the string\n", sorceFile, lineNum);
+                printf("error in line %d - missing \" for the string\n", lineNum);
                 break;
 
         case 110:
-                fprintf(stderr, "%s: error in line %d - first word unknown\n", sorceFile, lineNum);
+                printf("error in line %d - first word unknown\n", lineNum);
                 break;
 
         case 111:
-                fprintf(stderr, "%s: error in line %d - line isn't empty after external symbol name\n", sorceFile, lineNum);
+                printf("error in line %d - line isn't empty after external symbol name\n", lineNum);
                 break;
 
         case 112:
-                fprintf(stderr, "%s: error in line %d - error in operand information\n", sorceFile, lineNum);
+                printf("error in line %d - error in operand information\n", lineNum);
                 break;
 
         case 113:
-                fprintf(stderr, "%s: error in line %d - destination operand is using illegal address method for the command\n", sorceFile, lineNum);
+                printf("error in line %d - destination operand is using illegal address method for the command\n", lineNum);
                 break;
 
         case 114:
-                fprintf(stderr, "%s: error in line %d - origin operand is using illegal address method for the command\n", sorceFile, lineNum);
+                printf("error in line %d - origin operand is using illegal address method for the command\n", lineNum);
                 break;
 
         case 115:
-                fprintf(stderr, "%s: error in line %d - no operand information recieved\n", sorceFile, lineNum);
+                printf("error in line %d - no operand information recieved\n", lineNum);
                 break;
 
         case 116:
-                fprintf(stderr, "%s: error in line %d - unknown command\n", sorceFile, lineNum);
+                printf("error in line %d - unknown command\n", lineNum);
                 break;
 
         case 117:
-                fprintf(stderr, "%s: error in line %d - missing comma\n", sorceFile, lineNum);
+                printf("error in line %d - missing comma\n", lineNum);
                 break;
 
         case 118:
-                fprintf(stderr, "%s: error in line %d - first operand invalid\n", sorceFile, lineNum);
+                printf("error in line %d - first operand invalid\n", lineNum);
                 break;
 
         case 119:
-                fprintf(stderr, "%s: error in line %d - missing space between first operand and comma\n", sorceFile, lineNum);
+                printf("error in line %d - missing space between first operand and comma\n", lineNum);
                 break;
 
         case 120:
-                fprintf(stderr, "%s: error in line %d - illegal register number\n", sorceFile, lineNum);
+                printf("error in line %d - illegal register number\n", lineNum);
                 break;
 
         case 121:
-                fprintf(stderr, "%s: error in line %d - missing bracket\n", sorceFile, lineNum);
+                printf("error in line %d - missing bracket\n", lineNum);
                 break;
 
         case 122:
-                fprintf(stderr, "%s: error in line %d - first register must be an odd number\n", sorceFile, lineNum);
+                printf("error in line %d - first register must be an odd number\n", lineNum);
                 break;
 
         case 123:
-                fprintf(stderr, "%s: error in line %d - invalid char\n", sorceFile, lineNum);
+                printf("error in line %d - invalid char\n", lineNum);
                 break;
 
         case 124:
-                fprintf(stderr, "%s: error in line %d - invalid second operand\n", sorceFile, lineNum);
+                printf("error in line %d - invalid second operand\n", lineNum);
                 break;
 
         case 125:
-                fprintf(stderr, "%s: error in line %d - invalid first operand\n", sorceFile, lineNum);
+                printf("error in line %d - invalid first operand\n", lineNum);
                 break;
 
         case 126:
-                fprintf(stderr, "%s: error in line %d - misplaced expression\n", sorceFile, lineNum);
+                printf("error in line %d - misplaced expression\n", lineNum);
                 break;
 
 	case 127:
-                fprintf(stderr, "%s: error in line %d - label name doesn't exist in label list\n", sorceFile, lineNum);
+                printf("error in line %d - label name doesn't exist in label list\n", lineNum);
                 break;
 
 	case 128:
-                fprintf(stderr, "%s: error in line %d - line isn't empty after entry symbol name\n", sorceFile, lineNum);
+                printf("error in line %d - line isn't empty after entry symbol name\n", lineNum);
                 break;
 
 	case 129:
-                fprintf(stderr, "%s: error in line %d - symbol is not in symbol list\n", sorceFile, lineNum);
+                printf("error in line %d - symbol is not in symbol list\n", lineNum);
                 break;
 
 	case 000:
-		fprintf(stderr, "%s: error not found\n", sorceFile);
+		printf("error not found\n");
                 break;
 
         default:
-                fprintf(stderr, "%s: error not found\n", sorceFile);
+                printf("error not found\n");
                 break;
     }
 }
-
 
 
 /*------------------- Input Validation Functions -------------------*/
@@ -259,13 +259,18 @@ int checkCMD(char * toCheck)
 /* a function for "skipping" spaces in a given string */
 int skipSpaces(char * str, char * toWord)
 {
+	
 	int i = 0;
-	while(isspace(str+i)) 	 			/* as long as current letter pointed to in the string is space */
+	while(str[i] == SPACE) 	 			/* as long as current letter pointed to in the string is space */
 	{
+
 	   i++;			 			/* skip a letter */
 	   if(strncmp(str+i,(char *)NEWLINE,1) == 0) 	/* check for making sure we didn't reach end of string */
+	   {
 		return -1;				/* if we did, return -1 to signal */
+	   }
 	}
+	
 	toWord = strcpy(toWord,str+i);  		/* copy the next "word" to the desired string */
 	strcat(toWord,STRING_END);
 	
@@ -280,7 +285,7 @@ int frstOpChk(char * op1, char * fileName, int lineNum)
 
 	int j = 0;
 	int i = 0;
-	char * garbage;
+	char garbage[MAX_LABEL_LENGTH] = "";
 	
 	while(isalnum(op1+j) && op1[j] != COMMA) 	/* check the part between first operand and comma, until reaching space or comma */
 	{
@@ -293,6 +298,7 @@ int frstOpChk(char * op1, char * fileName, int lineNum)
 	   if(i == -1)
 	   {
 		/* error code 106: line is empty after first operand */
+		errorCounter++;	
 		errorFunction(fileName, lineNum, 106);
 	   }
 
@@ -328,6 +334,7 @@ int checkOneOperand(char * str, char * opName,char * fileName, int lineNum)
 	   if((garbage = strchr(str,COMMA)) != NULL)	/* check line for comma */
 	   {
 			/* error code 126: there is a comma but shouldn't be */
+			errorCounter++;	
 			errorFunction(fileName, lineNum, 126);
 	   }
 
@@ -350,7 +357,8 @@ int checkOneOperand(char * str, char * opName,char * fileName, int lineNum)
 
 		else
 		{
-		   /* error code 125: no valid first operand found */		
+		   /* error code 125: no valid first operand found */	
+		   errorCounter++;		
 		   errorFunction(fileName, lineNum, 125);
 		}
 
@@ -360,6 +368,7 @@ int checkOneOperand(char * str, char * opName,char * fileName, int lineNum)
 	   if(j != -1)
 	   {
 		/* error code 126: non-space letter between operand and newline */
+		errorCounter++;	
 		errorFunction(fileName, lineNum, 126);
 	   }
 	   
@@ -374,6 +383,7 @@ int checkOneOperand(char * str, char * opName,char * fileName, int lineNum)
 	   if(str[1] == 8 || str[1] == 9) /* check for illegal register numbers */
 	   {
 		/* error code 120: illegal number of register */
+		errorCounter++;	
 		errorFunction(fileName, lineNum, 120);
 	   }
 
@@ -391,6 +401,7 @@ int checkOneOperand(char * str, char * opName,char * fileName, int lineNum)
 			  	if((garbage = strchr(str,COMMA)) != NULL)
 			   	{
 					/* error code 126: there is a comma but shouldn't be */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 126);
 			   	}
 
@@ -399,18 +410,21 @@ int checkOneOperand(char * str, char * opName,char * fileName, int lineNum)
 			   else
 			   {
 			      /* error code 126: non-space non-comma character after first operand */
+			      errorCounter++;	
 			      errorFunction(fileName, lineNum, 126);
 			   }
 			}
 			else
 			{
 			    /* error code 121: no closing right bracket */
+			    errorCounter++;	
 			    errorFunction(fileName, lineNum, 121);
 			}
 		   }
 		   else
 		   {
 			/* error code 120: first register must be odd number */
+			errorCounter++;	
 			errorFunction(fileName, lineNum, 120);
 	   	   }
 		   
@@ -418,6 +432,7 @@ int checkOneOperand(char * str, char * opName,char * fileName, int lineNum)
 		else
 		{
 		   /* error code 123: not a valid char */
+		   errorCounter++;	
 		   errorFunction(fileName, lineNum, 123);
 		}
 
@@ -429,6 +444,7 @@ int checkOneOperand(char * str, char * opName,char * fileName, int lineNum)
 	   	if(j != -1)
 	   	{
 			/* error code 126: non-space letter between operand and newline */
+			errorCounter++;	
 			errorFunction(fileName, lineNum, 126);
 	  	}
 	
@@ -451,6 +467,7 @@ int checkOneOperand(char * str, char * opName,char * fileName, int lineNum)
 	   if((garbage = strchr(str,COMMA)) != NULL)
 	   {
 		/* error code 126: there is a comma but shouldn't be */
+		errorCounter++;	
 		errorFunction(fileName, lineNum, 126);
 	   }	      
 
@@ -458,6 +475,7 @@ int checkOneOperand(char * str, char * opName,char * fileName, int lineNum)
 	   if(i != -1)
 	   {
 			/* error code 113: line isn't empty after first operand */
+			errorCounter++;	
 			errorFunction(fileName, lineNum, 113);
 	   }
 
@@ -482,31 +500,22 @@ int checkOneOperand(char * str, char * opName,char * fileName, int lineNum)
 int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName, int lineNum)	
 {
 	int i = 0;
-	int j = 0;
 	int length = 0;
-	
-	/* bool variables used as flags by the function */
-	
-	bool op1directNum = false;
-	bool op1variable = false;
-	bool op1regIndx = false;
-	bool op1reg = false;
-	
 
 	int op1type = 0;	/* variables for address method types. 0 is not found or error, 1 is immediate number */
 	int op2type = 0;	/* 2 is register, 3 is register-index, and 4 is variable */
 
 	char * op1;		/* a string to hold first operand information */
 	char * op2;		/* a string to hold second operand information */
-	char * garbage; 	/* a char array to hold garbage  */
 	
 
 	if(str[i] == IMD_FLAG)
 	{
 
-	   if((garbage = strchr(str,COMMA)) == NULL)	/* check line for comma */
+	   if(strchr(str,COMMA) == NULL)	/* check line for comma */
 	   {
 			/* error code 117: no comma separating operands */
+			errorCounter++;	
 			errorFunction(fileName, lineNum, 117);	
 	   }
 
@@ -538,6 +547,7 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 		else
 		{
 		   /* error code 118: first operand contains non-digit*/
+		   errorCounter++;	
 		   errorFunction(fileName, lineNum, 118);	
 		}
 	   }
@@ -545,6 +555,7 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 	   if(frstOpChk(op1, fileName, lineNum) == -1)
 	   {
 		/* error code 119: non-space exists between first operand and comma */
+		 errorCounter++;	
 		 errorFunction(fileName, lineNum, 119);	
 	   }
 
@@ -559,6 +570,7 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 	   if(str[i+1] > MAX_REGISTER_DIGIT) /* check for illegal register numbers */
 	   {
 		/* error code 120: illegal number of register */
+		errorCounter++;	
 		errorFunction(fileName, lineNum, 120);	
 	   }
 
@@ -575,9 +587,10 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 			   {
 			   	op1type = 3; 		/* signal that first operand is a register-index adress method */
 
-			  	if((garbage = strchr(str,COMMA)) == NULL)
+			  	if(strchr(str,COMMA) == NULL)
 			   	{
 					/* error code 117: no comma separating operands */
+					errorCounter++;	
 					errorFunction(fileName, lineNum, 117);	
 			   	}
 
@@ -591,6 +604,7 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 			   else
 			   {
 			      /* error code 119: non-space non-comma character after first operand */
+			      errorCounter++;	
 			      errorFunction(fileName, lineNum, 119);	
 			   }
 
@@ -598,6 +612,7 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 			else
 			{
 			    /* error code 121: no closing right bracket */
+			    errorCounter++;	
 			    errorFunction(fileName, lineNum, 121);	
 			}
 
@@ -605,6 +620,7 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 		   else
 		   {
 			/* error code 122: first register must be odd number */
+			errorCounter++;	
 			errorFunction(fileName, lineNum, 122);
 	   	   }
 		   
@@ -612,15 +628,17 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 		else
 		{
 		   /* error code 123: not a valid char */
+		   errorCounter++;	
 		   errorFunction(fileName, lineNum, 123);
 		}
 	   }
 	   else
 	   {
 	   	op1type = 2; 		/* signal that first operand is a register */
-		if((garbage = strchr(str,(char)COMMA)) == NULL)
+		if(strchr(str,(char)COMMA) == NULL)
 		{
 			/* error code 117: no comma separating operands */
+			errorCounter++;	
 			errorFunction(fileName, lineNum, 117);	
 		}
 
@@ -635,6 +653,7 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 	   if(frstOpChk(op1, fileName, lineNum) == -1)
 	   {
 		/* error code 119: non-space exists between first operand and comma */
+		errorCounter++;	
 		errorFunction(fileName, lineNum, 119);
 	   }
 
@@ -650,9 +669,10 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 	if(op1type == 0)	/* check that we didn't find first operand type yet, so should be a variable */ 
 	{
 	   op1type = 4; 		/* signal that first operand is a variable */
-	   if((garbage = strchr(str,(char)COMMA)) == NULL)
+	   if(strchr(str,(char)COMMA) == NULL)
 	   {
 		/* error code 117: no comma separating operands */
+		errorCounter++;	
 		errorFunction(fileName, lineNum, 117);	
 	   }
 
@@ -665,6 +685,7 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 	   if(frstOpChk(op1, fileName, lineNum) == -1)
 	   {
 		/* error code 119: non-space exists between first operand and comma */
+		errorCounter++;	
 		errorFunction(fileName, lineNum, 119);
 	   }
 
@@ -687,6 +708,7 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 	if(i == -1)
 	{
 		/* error code 124: line is empty after comma */
+		errorCounter++;	
 		errorFunction(fileName, lineNum, 124);
 	}
 
@@ -694,14 +716,15 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 	if(op2type == 0)	/* operand type not found for second operand */
 	{
 	   /* error code 124: error with 2nd operand */
+	   errorCounter++;	
 	   errorFunction(fileName, lineNum, 124);
 	}
 	
 	if(op1type == 0)	/* operand type not found for first operand */
 	{
-		/* error code 125: no valid first operand found */		
+		/* error code 125: no valid first operand found */
+		errorCounter++;			
 		errorFunction(fileName, lineNum, 125);
-		return;
 	}
 
 	else
@@ -711,3 +734,4 @@ int checkTwoOperands(char * str,char * op1name, char * op2name, char * fileName,
 	   return op1type;		/* return the result. the origin operand is in the "tens" digit, and the destination operand is in the "ones" digit */
 	}
 }
+
